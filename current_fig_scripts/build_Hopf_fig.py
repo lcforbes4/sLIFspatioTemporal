@@ -1,15 +1,15 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.gridspec import GridSpec
-from publish.functions_and_sims.mean_field_equation_functions import calculate_mean_field, plot_mean_field, plot_spatial_MF
-from publish.functions_and_sims.matlab_import_functions import get_periodic_branch_points
+from functions_and_sims.mean_field_equation_functions import calculate_mean_field, plot_mean_field, plot_spatial_MF
+from functions_and_sims.matlab_import_functions import get_periodic_branch_points
 #from calculateMeanFieldProperties import period_varied_J, period_varied_E, period_varied_tau
-from publish.functions_and_sims.spiking_network_functions import neuron_population, plot_avg
+from functions_and_sims.spiking_network_functions import neuron_population, plot_avg
 import seaborn as sns
-from publish.functions_and_sims.plot_bifurcation_curves_and_phase_diag import plot_Hopf_curves_varied_D, plot_Hopf_phase_diag
+from functions_and_sims.plot_bifurcation_curves_and_phase_diag import plot_Hopf_curves_varied_D, plot_Hopf_phase_diag
 from matplotlib.lines import Line2D
 from matplotlib.legend_handler import HandlerBase
-from publish.functions_and_sims.visualization_functions import add_subplot_label
+from functions_and_sims.visualization_functions import add_subplot_label
 from mpl_toolkits.axes_grid1.inset_locator import inset_axes
 
 
@@ -399,7 +399,7 @@ def build_Hopffig_v2():
     ax_osc.set_visible(False)
     ax_inset1 = inset_axes(ax_osc, width="90%", height="40%", loc='upper right')
 
-    m = np.load('../../SpatialMeanField/UniformOscildt.01_E2_D1_J0-6_J10.npy')
+    m = np.load('../SpatialMeanField/UniformOscildt.01_E2_D1_J0-6_J10.npy')
     plot_spatial_MF(m,.01,xlim=[0, t_max], fontsize=fontsize, labelsize=labelsize, color_bar=True, ax=ax_inset1)
     ax_inset1.get_xaxis().set_visible(False)
 

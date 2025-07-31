@@ -1,8 +1,8 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.gridspec import GridSpec
-from publish.functions_and_sims.mean_field_equation_functions import MF_spatial_sim
-from publish.functions_and_sims.spiking_network_functions import neuron_population, plot_pop
+from functions_and_sims.mean_field_equation_functions import MF_spatial_sim
+from functions_and_sims.spiking_network_functions import neuron_population, plot_pop
 from matplotlib.colors import TwoSlopeNorm
 from matplotlib.animation import FuncAnimation, PillowWriter
 

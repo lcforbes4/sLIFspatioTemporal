@@ -1,7 +1,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.gridspec import GridSpec
-from publish.functions_and_sims.spiking_network_functions import plot_pop, synch_2pulses_spatial_sim, generate_spatial_connectivity_mat
+from functions_and_sims.spiking_network_functions import plot_pop, synch_2pulses_spatial_sim, generate_spatial_connectivity_mat
 
 # script to create data for spatial bistable
 

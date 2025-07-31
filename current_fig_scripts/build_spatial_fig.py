@@ -2,13 +2,13 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.io import loadmat
 from matplotlib.gridspec import GridSpec
-from publish.functions_and_sims.mean_field_equation_functions import plot_spatial_MF, MF_spatial_sim, MFsim_with_con_mat
+from functions_and_sims.mean_field_equation_functions import plot_spatial_MF, MF_spatial_sim, MFsim_with_con_mat
 #from calculateMeanFieldProperties import period_varied_J, period_varied_E, period_varied_tau
-from publish.functions_and_sims.spiking_network_functions import neuron_population, plot_pop
+from functions_and_sims.spiking_network_functions import neuron_population, plot_pop
 import seaborn as sns
-from publish.functions_and_sims.plot_bifurcation_curves_and_phase_diag import plot_turing_curve_varied_J1, Turing_phase_diag_colors
+from functions_and_sims.plot_bifurcation_curves_and_phase_diag import plot_turing_curve_varied_J1, Turing_phase_diag_colors
 from matplotlib.animation import FuncAnimation
-from publish.functions_and_sims.visualization_functions import add_subplot_label
+from functions_and_sims.visualization_functions import add_subplot_label
 from mpl_toolkits.axes_grid1.inset_locator import inset_axes
 
 fontsize = 8

@@ -1,6 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from publish.functions_and_sims.spiking_network_functions import neuron_population_output_avg, generate_connectivity_mat
+from functions_and_sims.spiking_network_functions import neuron_population_output_avg, generate_connectivity_mat
 from scipy import signal
 import scipy
 

@@ -2,7 +2,7 @@ import numpy as np
 import networkx as nx
 import matplotlib.pyplot as plt
 import seaborn as sns
-from publish.functions_and_sims.spiking_network_functions import generate_spatial_connectivity_mat
+from functions_and_sims.spiking_network_functions import generate_spatial_connectivity_mat
 
 def plot_network_graph_diagram(g_bar):
 

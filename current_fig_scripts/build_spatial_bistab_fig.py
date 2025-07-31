@@ -3,11 +3,11 @@ import matplotlib.pyplot as plt
 from scipy.io import loadmat
 from matplotlib.gridspec import GridSpec
 #from calculateMeanFieldProperties import period_varied_J, period_varied_E, period_varied_tau
-from publish.functions_and_sims.spiking_network_functions import plot_pop
+from functions_and_sims.spiking_network_functions import plot_pop
 import seaborn as sns
-from publish.functions_and_sims.visualization_functions import add_subplot_label
+from functions_and_sims.visualization_functions import add_subplot_label
 from build_spatial_fig import detect_upper_fold, detect_lower_fold
-from publish.functions_and_sims.plot_bifurcation_curves_and_phase_diag import Turing_phase_diag_zoom
+from functions_and_sims.plot_bifurcation_curves_and_phase_diag import Turing_phase_diag_zoom
 
 fontsize = 8
 labelsize = 6

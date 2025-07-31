@@ -79,7 +79,7 @@ if __name__ == '__main__':
     delay = 2
 
     val_list = get_periodic_branch_points(
-        '../../old_figure_scripts/delayedExpCaseFigures/fig2data/matlabdatav1/branch4_Jsave.mat', 'J_value', 0)
+        '../old_figure_scripts/delayedExpCaseFigures/fig2data/matlabdatav1/branch4_Jsave.mat', 'J_value', 0)
     #plt.plot(val_list[:]['J_value'], val_list[:]['L2'])
     plt.legend
 

@@ -1,10 +1,10 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.gridspec import GridSpec
-from publish.functions_and_sims.spiking_network_functions import plot_single_neuron, plot_spike_times
-from publish.functions_and_sims.spiking_network_functions import plot_pop, plot_avg, neuron_population
+from functions_and_sims.spiking_network_functions import plot_single_neuron, plot_spike_times
+from functions_and_sims.spiking_network_functions import plot_pop, plot_avg, neuron_population
 import seaborn as sns
-from publish.functions_and_sims.visualization_functions import plot_network_graph_diagram, add_subplot_label
+from functions_and_sims.visualization_functions import plot_network_graph_diagram, add_subplot_label
 
 fontsize = 8
 labelsize = 6

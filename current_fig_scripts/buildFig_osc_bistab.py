@@ -3,11 +3,11 @@ import matplotlib.pyplot as plt
 from matplotlib.ticker import MaxNLocator, FormatStrFormatter
 from matplotlib.gridspec import GridSpec
 import seaborn as sns
-from publish.functions_and_sims.mean_field_equation_functions import plot_ramped_mean_field_vs_param, plot_spatial_MF, MFsimulation_2_unif_pulses
+from functions_and_sims.mean_field_equation_functions import plot_ramped_mean_field_vs_param, plot_spatial_MF, MFsimulation_2_unif_pulses
 import matplotlib.patches as patches
-from publish.scripts_for_saved_data.create_data_for_Hopf_bistab_fig import plot_bif_curve_J_vs_v
-from publish.functions_and_sims.spiking_network_functions import plot_pop
-from publish.functions_and_sims.visualization_functions import add_subplot_label
+from scripts_for_saved_data.create_data_for_Hopf_bistab_fig import plot_bif_curve_J_vs_v
+from functions_and_sims.spiking_network_functions import plot_pop
+from functions_and_sims.visualization_functions import add_subplot_label
 
 fontsize = 8
 labelsize = 6

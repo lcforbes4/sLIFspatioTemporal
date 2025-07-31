@@ -5,10 +5,10 @@
 
 import numpy as np
 from matplotlib import pyplot as plt
-from publish.functions_and_sims.mean_field_equation_functions import ramping_mean_field, plot_ramped_mean_field_vs_param, MFsimulation_2_unif_pulses
-from publish.functions_and_sims.matlab_import_functions import get_periodic_branch_points
+from functions_and_sims.mean_field_equation_functions import ramping_mean_field, plot_ramped_mean_field_vs_param, MFsimulation_2_unif_pulses
+from functions_and_sims.matlab_import_functions import get_periodic_branch_points
 from matplotlib.gridspec import GridSpec
-from publish.functions_and_sims.spiking_network_functions import plot_pop, plot_avg, generate_spatial_connectivity_mat, ramp_param_sim, synch_2pulses_sim
+from functions_and_sims.spiking_network_functions import plot_pop, plot_avg, generate_spatial_connectivity_mat, ramp_param_sim, synch_2pulses_sim
 
 def plot_bif_curve_J_vs_v(E, file_name):
     linewidth = 1

@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 from matplotlib.colors import TwoSlopeNorm
 from mpl_toolkits.axes_grid1.inset_locator import inset_axes
 
-from publish.functions_and_sims.spiking_network_functions import generate_spatial_connectivity_mat
+from functions_and_sims.spiking_network_functions import generate_spatial_connectivity_mat
 
 
 # Functions for a numerical time stepper for the mean field approx

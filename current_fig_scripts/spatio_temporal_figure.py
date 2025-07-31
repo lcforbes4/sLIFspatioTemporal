@@ -2,11 +2,11 @@ import numpy as np
 import matplotlib.pyplot as plt
 from matplotlib.gridspec import GridSpec
 import seaborn as sns
-from publish.functions_and_sims.plot_bifurcation_curves_and_phase_diag import plot_delta_instabilties_E_lessthan_1, plot_delta_instabilties_E_gthan_1
+from functions_and_sims.plot_bifurcation_curves_and_phase_diag import plot_delta_instabilties_E_lessthan_1, plot_delta_instabilties_E_gthan_1
 from sympy import symbols, lambdify, acos, sqrt
-from publish.functions_and_sims.visualization_functions import add_subplot_label
-from publish.functions_and_sims.mean_field_equation_functions import plot_spatial_MF
-from publish.functions_and_sims.spiking_network_functions import plot_pop
+from functions_and_sims.visualization_functions import add_subplot_label
+from functions_and_sims.mean_field_equation_functions import plot_spatial_MF
+from functions_and_sims.spiking_network_functions import plot_pop
 
 fontsize = 8
 labelsize = 6
@@ -217,7 +217,7 @@ def build_spatio_tempo_fig():
     markersz = 0.2
 
     ax_traveling_wave = fig.add_subplot(gs_traveling_wave)
-    m = np.load('../../SpatialMeanField/travelingWavedt.01_E2_D1_J0-2_J1-8.npy')
+    m = np.load('../SpatialMeanField/travelingWavedt.01_E2_D1_J0-2_J1-8.npy')
     plot_spatial_MF(m,.01,xlim=[5,15], fontsize=fontsize, labelsize=labelsize)
     ax_traveling_wave.set_xlabel('')
     ax_traveling_wave.set_ylabel('')
@@ -225,7 +225,7 @@ def build_spatio_tempo_fig():
     ax_traveling_wave.set_yticklabels([])
 
     ax_standing_wave = fig.add_subplot(gs_standing_wave)
-    m = np.load('../../SpatialMeanField/StandingWavedt.01_E2_D1_J0-2_J1-8.npy')
+    m = np.load('../SpatialMeanField/StandingWavedt.01_E2_D1_J0-2_J1-8.npy')
     plot_spatial_MF(m,.01,xlim=[5,15], fontsize=fontsize, labelsize=labelsize)
     ax_standing_wave.set_xlabel('')
     ax_standing_wave.set_yticklabels([])
