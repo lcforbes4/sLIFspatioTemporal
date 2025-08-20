@@ -4,7 +4,7 @@ from matplotlib.gridspec import GridSpec
 from matplotlib.pyplot import cm
 import matplotlib.patches as patches
 
-# This is a spiking simulation functions for different conductivity functions (determined by J_choice)
+# This is a spiking simulation functions for different synaptic filters (determined by J_choice)
 # Plots, the population, a single neuron, as well as the population average
 
 
@@ -21,24 +21,25 @@ def intensity_func(v, B=1, v_th=1, p=1):
 
     return B * x ** p
 
-def generate_connectivity_mat(g, p, N):
-    # g_bar, an NxN matrix filled with the conductivity between the neurons, normalized. With a certain probability
+
+def generate_connectivity_mat(J, p, N):
+    # Jspace, an NxN matrix filled with the synaptic weights between the neurons, normalized. With a certain probability
     # whether they are connected or not
-    g_bar = np.random.binomial(n=1, p=p, size=(N, N)) * g / p / N
-    np.fill_diagonal(g_bar, 0)  # make sure connection =0 if i=j
-    return g_bar
-
-def generate_spatial_connectivity_mat(A, B, N, p = 0.5):
-    # equivalent to generate_connectivity_mat when B=0
-    connection_prob = cos_prob(A, B, N)
-    g_bar = np.random.binomial(n=1, p=p, size=(N, N)) * connection_prob / p * (2*np.pi/N)
-    np.fill_diagonal(g_bar, 0)  # make sure connection =0 if i=j
-    print(g_bar)
-    return g_bar
+    Jmat = np.random.binomial(n=1, p=p, size=(N, N)) * J / p / N 
+    np.fill_diagonal(Jmat, 0)  # make sure connection =0 if i=j
+    return Jmat
 
 
-def cos_prob(A,B,Nx):
-    # returns (1/2pi)*(A+Bcos(x)) where x in [-pi,pi] with Nx grid points
+def generate_spatial_connectivity_mat(J0, J1, N, p = 0.5):
+    # equivalent to generate_connectivity_mat when J1=0
+    weights = cos_weight(J0, J1, N)
+    Jmat = np.random.binomial(n=1, p=p, size=(N, N)) * weights / (p * N) * (2*np.pi) # factor of 2 pi comes from change of variables from neurons to angles
+    np.fill_diagonal(Jmat, 0)  # make sure connection =0 if i=j
+    return Jmat
+
+
+def cos_weight(J0, J1, Nx):
+    # returns (J0 + J1 cos(x))/(2*np.pi), where x in [-pi,pi), with Nx grid points
 
     x  = np.linspace(-np.pi, np.pi, Nx, endpoint=False)
     theta_diff = x[:, np.newaxis] - x  # N x N matrix of all pairwise distances
@@ -47,17 +48,12 @@ def cos_prob(A,B,Nx):
     theta_diff = np.abs(theta_diff)
     theta_diff = np.minimum(theta_diff, 2 * np.pi - theta_diff)
 
-    # Connection probability functions using the formula p(r) = p0 + p1 * cos(r)
-    p = (A + B  * np.cos(theta_diff))/(2*np.pi)
-    return p
+    return (J0 + J1  * np.cos(theta_diff)) / (2*np.pi)
+
 
 # spiking network simulation
-def neuron_population(J_choice, tstop, dt, N, tau, E, tauD, initial, J0, J1):
+def neuron_population(J_choice, tstop, dt, N, tau, E, tauD, initial, J0, J1, B=1, v_th=1, v_r=0, p=1):
 
-    B = 1 #slope of intensity function
-    v_th = 1  # voltage threshold
-    p = 1 # power of intensity function (1=linear, 2=quadratic)
-    v_r = 0  # Reset Voltage
     Nt = int(tstop / dt)  # number of times steps
     Ndelay = int(tauD / dt)
 
@@ -65,10 +61,10 @@ def neuron_population(J_choice, tstop, dt, N, tau, E, tauD, initial, J0, J1):
     Nt = Nt + Ndelay
 
     #connectivity matrix
-    g_bar = generate_spatial_connectivity_mat(J0, J1, N)
+    Jspace = generate_spatial_connectivity_mat(J0, J1, N)
 
     v = np.zeros((Nt, N)) # Initialize array to hold voltage at each time step for each neuron
-    J = np.zeros((Nt, N)) # NtxN Matrix for the conductivity-input of each neuron
+    J = np.zeros((Nt, N)) # NtxN Matrix for the synaptic weights
     nu = np.zeros((Nt, N)) # aux synaptic variable for alpha func
     n = np.zeros(N, )  # Array to hold boolean of whether each neuron has spiked or not
     spktimes = []
@@ -84,9 +80,9 @@ def neuron_population(J_choice, tstop, dt, N, tau, E, tauD, initial, J0, J1):
             lam[lam > 1 / dt] = 1 / dt  # requiring the range
             n = np.random.binomial(n=1, p=dt * lam)
         else:
-            if J_choice == 1:  # J(t) = g_bar * delta(t-tauD)
+            if J_choice == 1:  # J(t) = Jspace * delta(t-tauD)
                 v[t] = v[t - 1] + dt * (-v[t - 1] + E) + J[t - 1, :] - n * (v[t - 1] - v_r)
-            elif J_choice == 2 or J_choice == 3:  # J(t) = g_bar/tau * E^(-(t-tauD)/tau) * H(t-tauD)
+            elif J_choice == 2 or J_choice == 3:  # J(t) = Jspace/tau * e^(-(t-tauD)/tau) * H(t-tauD)
                 v[t] = v[t - 1] + dt * (-v[t - 1] + E + J[t - 1, :]) - n * (v[t - 1] - v_r)
             lam = intensity_func(v[t], B=B, v_th=v_th, p=p)
             lam[lam > 1 / dt] = 1 / dt  # requiring the range
@@ -94,16 +90,16 @@ def neuron_population(J_choice, tstop, dt, N, tau, E, tauD, initial, J0, J1):
 
         #rprint(n)
         # Different J(t) Functions:
-        if J_choice == 1: # J(t) = g_bar * delta(t-tauD)
+        if J_choice == 1: # J(t) = Jspace * delta(t-tauD)
             if t < Nt-Ndelay:
-                J[t + Ndelay] = J[t + Ndelay] + g_bar @ n
-        elif J_choice == 2: # J(t) = g_bar/tau * E^(-(t-tauD)/tau) * H(t-tauD)
+                J[t + Ndelay] = J[t + Ndelay] + Jspace @ n
+        elif J_choice == 2: # J(t) = Jspace/tau * E^(-(t-tauD)/tau) * H(t-tauD)
             if t < Nt - Ndelay:
-                J[t+Ndelay] += g_bar.dot(n)/tau
+                J[t+Ndelay] += Jspace.dot(n)/tau
             J[t] += J[t-1] * (1-dt/tau)
-        elif J_choice == 3: # J(t) = g_bar 1/tau^2 t e^(-t/tau) H(t)
+        elif J_choice == 3: # J(t) = Jspace 1/tau^2 t e^(-t/tau) H(t)
             if t < Nt - Ndelay:
-                nu[t+Ndelay] += g_bar.dot(n)/tau**2
+                nu[t+Ndelay] += Jspace.dot(n)/tau**2
             nu[t] += nu[t-1] + dt*(-2 * nu[t-1]/tau - J[t-1]/(tau ** 2))
             J[t] += J[t-1] + dt*nu[t-1]
 
@@ -141,19 +137,18 @@ def synch_pulse_then_ramp_sim(J_choice, tstop, dt, N, g, tau, E, tauD, pulse_tim
     v0 = g + np.sqrt(g ** 2 + 4 * (E - g))
     v0 /= 2
 
-    #g_bar, an NxN matrix filled with the conductivity between the neurons, normalized. With a certain probability
-    #whether they are connected or not
+    #create Jspace, an NxN matrix filled with the synaptic weights
     connection_prob = 0.5
-    g_bar = np.random.binomial(n=1, p=connection_prob, size=(N, N)) * g / connection_prob / N
-    np.fill_diagonal(g_bar, 0) #make sure connection =0 if i=j
-    #print(g_bar)
-    #np.save('g_bar.npy',g_bar)
-    #g_bar = np.load('g_bar.npy')
+    Jspace = np.random.binomial(n=1, p=connection_prob, size=(N, N)) * g / connection_prob / N
+    np.fill_diagonal(Jspace, 0) #make sure connection =0 if i=j
+    #print(Jspace)
+    #np.save('Jspace.npy',Jspace)
+    #Jspace = np.load('Jspace.npy')
 
     v = np.zeros((Nt, N)) # Initialize array to hold voltage at each time step for each neuron, IV=1
     v[:Ndelay] = initial
 
-    J = np.zeros((Nt, N)) # NtxN Matrix for the conductivity-input of each neuron
+    J = np.zeros((Nt, N)) # NtxN Matrix for the synaptic input of each neuron
     nu = np.zeros((Nt, N)) # Initial J values all 0
     n = np.zeros(N, )  # Array to hold boolean of whether each neuron has spiked or not
     spktimes = []
@@ -175,9 +170,9 @@ def synch_pulse_then_ramp_sim(J_choice, tstop, dt, N, g, tau, E, tauD, pulse_tim
             lam[lam > 1 / dt] = 1 / dt  # requiring the range
             n = np.random.binomial(n=1, p=dt * lam)
         else:
-            if J_choice == 1:  # J(t) = g_bar * delta(t-tauD)
+            if J_choice == 1:  # J(t) = Jspace * delta(t-tauD)
                 v[t] = v[t - 1] + dt * (-v[t - 1] + E) + J[t - 1, :] - n * (v[t - 1] - v_r)
-            elif J_choice == 2 or J_choice == 3:  # J(t) = g_bar/tau * E^(-(t-tauD)/tau) * H(t-tauD)
+            elif J_choice == 2 or J_choice == 3:  # J(t) = Jspace/tau * E^(-(t-tauD)/tau) * H(t-tauD)
                 v[t] = v[t - 1] + dt * (-v[t - 1] + E + J[t - 1, :]) - n * (v[t - 1] - v_r)
             lam = intensity_func(v[t], B=B, v_th=v_th, p=p)
             lam[lam > 1 / dt] = 1 / dt  # requiring the range
@@ -193,16 +188,16 @@ def synch_pulse_then_ramp_sim(J_choice, tstop, dt, N, g, tau, E, tauD, pulse_tim
 
         # Different J(t) Functions:
 
-        if J_choice==1: # J(t) = g_bar * delta(t-tauD)
+        if J_choice==1: # J(t) = Jspace * delta(t-tauD)
             if t < Nt-Ndelay:
-                J[t + Ndelay] = J[t + Ndelay] + g_bar @ n
-        elif J_choice==2: # J(t) = g_bar/tau * E^(-(t-tauD)/tau) * H(t-tauD)
+                J[t + Ndelay] = J[t + Ndelay] + Jspace @ n
+        elif J_choice==2: # J(t) = Jspace/tau * E^(-(t-tauD)/tau) * H(t-tauD)
             if t < Nt - Ndelay:
-                J[t+Ndelay] += g_bar.dot(n)/tau
+                J[t+Ndelay] += Jspace.dot(n)/tau
             J[t] += J[t-1] * (1-dt/tau)
-        elif J_choice==3: # J(t) = g_bar 1/tau^2 t e^(-t/tau) H(t)
+        elif J_choice==3: # J(t) = Jspace 1/tau^2 t e^(-t/tau) H(t)
             if t < Nt - Ndelay:
-                nu[t+Ndelay] += g_bar.dot(n)/tau**2
+                nu[t+Ndelay] += Jspace.dot(n)/tau**2
             nu[t] += nu[t-1] + dt*(-2 * nu[t-1]/tau - J[t-1]/(tau ** 2))
             J[t] += J[t-1] + dt*nu[t-1]
 
@@ -220,7 +215,8 @@ def synch_pulse_then_ramp_sim(J_choice, tstop, dt, N, g, tau, E, tauD, pulse_tim
 
     return v_shift, spktimes, J
 
-def synch_2pulses_sim(J_choice, tstop, dt, N, g, tau, E, tauD, pulse_time, duration, pulse_amp, initial, g_bar):
+
+def synch_2pulses_sim(J_choice, tstop, dt, N, g, tau, E, tauD, pulse_time, duration, pulse_amp, initial, Jspace):
     # This function applies 2 pulses to the parameter E a network of spiking neurons
     # intended to show bi-stability from homog activity to oscillaitons
 
@@ -257,7 +253,7 @@ def synch_2pulses_sim(J_choice, tstop, dt, N, g, tau, E, tauD, pulse_time, durat
     ramp_param_array = []
 
 
-    J = np.zeros((Nt, N)) # NtxN Matrix for the conductivity-input of each neuron
+    J = np.zeros((Nt, N)) # NtxN Matrix for the synaptic input of each neuron
     nu = np.zeros((Nt, N)) # Initial J values all 0
     n = np.zeros(N, )  # Array to hold boolean of whether each neuron has spiked or not
     spktimes = []
@@ -279,9 +275,9 @@ def synch_2pulses_sim(J_choice, tstop, dt, N, g, tau, E, tauD, pulse_time, durat
             lam[lam > 1 / dt] = 1 / dt  # requiring the range
             n = np.random.binomial(n=1, p=dt * lam)
         else:
-            if J_choice == 1:  # J(t) = g_bar * delta(t-tauD)
+            if J_choice == 1:  # J(t) = Jspace * delta(t-tauD)
                 v[t] = v[t - 1] + dt * (-v[t - 1] + E) + J[t - 1, :] - n * (v[t - 1] - v_r)
-            elif J_choice == 2 or J_choice == 3:  # J(t) = g_bar/tau * E^(-(t-tauD)/tau) * H(t-tauD)
+            elif J_choice == 2 or J_choice == 3:  # J(t) = Jspace/tau * E^(-(t-tauD)/tau) * H(t-tauD)
                 v[t] = v[t - 1] + dt * (-v[t - 1] + E + J[t - 1, :]) - n * (v[t - 1] - v_r)
             lam = intensity_func(v[t], B=B, v_th=v_th, p=p)
             lam[lam > 1 / dt] = 1 / dt  # requiring the range
@@ -301,7 +297,7 @@ def synch_2pulses_sim(J_choice, tstop, dt, N, g, tau, E, tauD, pulse_time, durat
 
         ramp_param_array.append(E)
         #if t in range(0,int(N_pulse_time)):
-        #    g_bar = (g_bar / g) * (g + dJ)
+        #    Jspace = (Jspace / g) * (g + dJ)
         #    g = g + dJ
         if t % int(1/dt) == 0:
             print(t*dt)
@@ -311,16 +307,16 @@ def synch_2pulses_sim(J_choice, tstop, dt, N, g, tau, E, tauD, pulse_time, durat
 
         # Different J(t) Functions:
 
-        if J_choice==1: # J(t) = g_bar * delta(t-tauD)
+        if J_choice==1: # J(t) = Jspace * delta(t-tauD)
             if t < Nt-Ndelay:
-                J[t + Ndelay] = J[t + Ndelay] + g_bar @ n
-        elif J_choice==2: # J(t) = g_bar/tau * E^(-(t-tauD)/tau) * H(t-tauD)
+                J[t + Ndelay] = J[t + Ndelay] + Jspace @ n
+        elif J_choice==2: # J(t) = Jspace/tau * E^(-(t-tauD)/tau) * H(t-tauD)
             if t < Nt - Ndelay:
-                J[t+Ndelay] += g_bar.dot(n)/tau
+                J[t+Ndelay] += Jspace.dot(n)/tau
             J[t] += J[t-1] * (1-dt/tau)
-        elif J_choice==3: # J(t) = g_bar 1/tau^2 t e^(-t/tau) H(t)
+        elif J_choice==3: # J(t) = Jspace 1/tau^2 t e^(-t/tau) H(t)
             if t < Nt - Ndelay:
-                nu[t+Ndelay] += g_bar.dot(n)/tau**2
+                nu[t+Ndelay] += Jspace.dot(n)/tau**2
             nu[t] += nu[t-1] + dt*(-2 * nu[t-1]/tau - J[t-1]/(tau ** 2))
             J[t] += J[t-1] + dt*nu[t-1]
 
@@ -338,8 +334,8 @@ def synch_2pulses_sim(J_choice, tstop, dt, N, g, tau, E, tauD, pulse_time, durat
     ramp_param_array = ramp_param_array[Ndelay:]
     return v_shift, spktimes, J, ramp_param_array
 
-def synch_2pulses_spatial_sim(J_choice, tstop, dt, N, g, tau, E, tauD, pulse_time, duration, pulse_amp, pulse2_time,
-                                                                     duration2, pulse_amp2, initial, g_bar, which_portion):
+
+def synch_2pulses_spatial_sim(J_choice, tstop, dt, N, g, tau, E, tauD, pulse_time, duration, pulse_amp, pulse2_time, duration2, pulse_amp2, initial, Jspace, which_portion):
     # This function applies 2 pulses to the parameter E a network of spiking neurons
     # intended to show bi-stability from homog activity to oscillaitons
 
@@ -370,7 +366,7 @@ def synch_2pulses_spatial_sim(J_choice, tstop, dt, N, g, tau, E, tauD, pulse_tim
 
     ramp_param_array = []
 
-    J = np.zeros((Nt, N)) # NtxN Matrix for the conductivity-input of each neuron
+    J = np.zeros((Nt, N)) # NtxN Matrix for the synaptic input of each neuron
     nu = np.zeros((Nt, N)) # Initial J values all 0
     n = np.zeros(N, )  # Array to hold boolean of whether each neuron has spiked or not
     spktimes = []
@@ -383,9 +379,9 @@ def synch_2pulses_spatial_sim(J_choice, tstop, dt, N, g, tau, E, tauD, pulse_tim
             lam[lam > 1 / dt] = 1 / dt  # requiring the range
             n = np.random.binomial(n=1, p=dt * lam)
         else:
-            if J_choice == 1:  # J(t) = g_bar * delta(t-tauD)
+            if J_choice == 1:  # J(t) = Jspace * delta(t-tauD)
                 v[t] = v[t - 1] + dt * (-v[t - 1] + E) + J[t - 1, :] - n * (v[t - 1] - v_r)
-            elif J_choice == 2 or J_choice == 3:  # J(t) = g_bar/tau * E^(-(t-tauD)/tau) * H(t-tauD)
+            elif J_choice == 2 or J_choice == 3:  # J(t) = Jspace/tau * E^(-(t-tauD)/tau) * H(t-tauD)
                 v[t] = v[t - 1] + dt * (-v[t - 1] + E + J[t - 1, :]) - n * (v[t - 1] - v_r)
             lam = intensity_func(v[t], B=B, v_th=v_th, p=p)
             lam[lam > 1 / dt] = 1 / dt  # requiring the range
@@ -408,16 +404,16 @@ def synch_2pulses_spatial_sim(J_choice, tstop, dt, N, g, tau, E, tauD, pulse_tim
 
 
 
-        if J_choice==1: # J(t) = g_bar * delta(t-tauD)
+        if J_choice==1: # J(t) = Jspace * delta(t-tauD)
             if t < Nt-Ndelay:
-                J[t + Ndelay] = J[t + Ndelay] + g_bar @ n
-        elif J_choice==2: # J(t) = g_bar/tau * E^(-(t-tauD)/tau) * H(t-tauD)
+                J[t + Ndelay] = J[t + Ndelay] + Jspace @ n
+        elif J_choice==2: # J(t) = Jspace/tau * E^(-(t-tauD)/tau) * H(t-tauD)
             if t < Nt - Ndelay:
-                J[t+Ndelay] += g_bar.dot(n)/tau
+                J[t+Ndelay] += Jspace.dot(n)/tau
             J[t] += J[t-1] * (1-dt/tau)
-        elif J_choice==3: # J(t) = g_bar 1/tau^2 t e^(-t/tau) H(t)
+        elif J_choice==3: # J(t) = Jspace 1/tau^2 t e^(-t/tau) H(t)
             if t < Nt - Ndelay:
-                nu[t+Ndelay] += g_bar.dot(n)/tau**2
+                nu[t+Ndelay] += Jspace.dot(n)/tau**2
             nu[t] += nu[t-1] + dt*(-2 * nu[t-1]/tau - J[t-1]/(tau ** 2))
             J[t] += J[t-1] + dt*nu[t-1]
 
@@ -435,13 +431,14 @@ def synch_2pulses_spatial_sim(J_choice, tstop, dt, N, g, tau, E, tauD, pulse_tim
     ramp_param_array = ramp_param_array[Ndelay:]
     return v_shift, spktimes, J, ramp_param_array
 
-def ramp_param_sim(J_choice, tstop, dt, N, g, tau, E, tauD, initial, g_bar,  ramping_param_ind, ramp_param_start, ramp_param_end):
-#updated version of synch_pulse_then_ramp_sim_memory_save_vers that simpifies it quite a bit and allows ramping in other variables beside E
-#will ignore the input value of the parameter if you're ramping it
 
-# outputs average voltage of population
+def ramp_param_sim(J_choice, tstop, dt, N, g, tau, E, tauD, initial, Jspace,  ramping_param_ind, ramp_param_start, ramp_param_end):
+    #updated version of synch_pulse_then_ramp_sim_memory_save_vers that simpifies it quite a bit and allows ramping in other variables beside E
+    #will ignore the input value of the parameter if you're ramping it
 
-# todo ramping of delay parameter doesnt work
+    # outputs average voltage of population
+
+    # todo ramping of delay parameter doesnt work
     B = 1 #slope of intensity function
     v_th = 1  # voltage threshold
     p = 1 # power of intensity function (1=linear, 2=quadratic)
@@ -455,7 +452,7 @@ def ramp_param_sim(J_choice, tstop, dt, N, g, tau, E, tauD, initial, g_bar,  ram
     # Initial Conditions
     v_initial = initial
     if ramping_param_ind == 0:  # ramping J
-        g_bar = (g_bar/g)*(ramp_param_start)
+        Jspace = (Jspace/g)*(ramp_param_start)
         g = ramp_param_start
     elif ramping_param_ind == 1:  # ramping E
         E = ramp_param_start
@@ -488,9 +485,9 @@ def ramp_param_sim(J_choice, tstop, dt, N, g, tau, E, tauD, initial, g_bar,  ram
             lam[lam > 1 / dt] = 1 / dt  # requiring the range
             n = np.random.binomial(n=1, p=dt * lam)
         else:
-            if J_choice == 1:  # J(t) = g_bar * delta(t-tauD)
+            if J_choice == 1:  # J(t) = Jspace * delta(t-tauD)
                 v_new = v_old + dt * (-v_old + E) + J[0, :] - n * (v_old - v_r)
-            elif J_choice == 2 or J_choice == 3:  # J(t) = g_bar/tau * E^(-(t-tauD)/tau) * H(t-tauD)
+            elif J_choice == 2 or J_choice == 3:  # J(t) = Jspace/tau * E^(-(t-tauD)/tau) * H(t-tauD)
                 v_new = v_old + dt * (-v_old + E + J[t - 1, :]) - n * (v_old - v_r)
             lam = intensity_func(v_new, B=B, v_th=v_th, p=p)
             lam[lam > 1 / dt] = 1 / dt  # requiring the range
@@ -499,7 +496,7 @@ def ramp_param_sim(J_choice, tstop, dt, N, g, tau, E, tauD, initial, g_bar,  ram
 
         # the ramping
         if ramping_param_ind == 0:  # ramping J
-            g_bar = (g_bar / g) * (g+ramp_param_step)
+            Jspace = (Jspace / g) * (g+ramp_param_step)
             g += ramp_param_step
         elif ramping_param_ind == 1:  # ramping E
             E += ramp_param_step
@@ -509,16 +506,16 @@ def ramp_param_sim(J_choice, tstop, dt, N, g, tau, E, tauD, initial, g_bar,  ram
         # todo Ndelay makes it weird
 
         # Updating Different J(t) Functions:
-        if J_choice==1: # J(t) = g_bar * delta(t-tauD)
+        if J_choice==1: # J(t) = Jspace * delta(t-tauD)
             if t < Nt-Ndelay:
-                J[Ndelay] = J[Ndelay] + g_bar @ n
-        elif J_choice==2: # J(t) = g_bar/tau * E^(-(t-tauD)/tau) * H(t-tauD)
+                J[Ndelay] = J[Ndelay] + Jspace @ n
+        elif J_choice==2: # J(t) = Jspace/tau * E^(-(t-tauD)/tau) * H(t-tauD)
             if t < Nt - Ndelay:
-                J[t+Ndelay] += g_bar.dot(n)/tau
+                J[t+Ndelay] += Jspace.dot(n)/tau
             J[t] += J[t-1] * (1-dt/tau)
-        elif J_choice==3: # J(t) = g_bar 1/tau^2 t e^(-t/tau) H(t)
+        elif J_choice==3: # J(t) = Jspace 1/tau^2 t e^(-t/tau) H(t)
             if t < Nt - Ndelay:
-                nu[t+Ndelay] += g_bar.dot(n)/tau**2
+                nu[t+Ndelay] += Jspace.dot(n)/tau**2
             nu[t] += nu[t-1] + dt*(-2 * nu[t-1]/tau - J[t-1]/(tau ** 2))
             J[t] += J[t-1] + dt*nu[t-1]
         else:
@@ -539,7 +536,8 @@ def ramp_param_sim(J_choice, tstop, dt, N, g, tau, E, tauD, initial, g_bar,  ram
             print(t)
     return v_avg, spktimes
 
-def neuron_population_output_avg(J_choice, tstop, dt, N, g, tau, E, tauD, initial, g_bar):
+
+def neuron_population_output_avg(J_choice, tstop, dt, N, g, tau, E, tauD, initial, Jspace):
     #has all the neurons at the same inital value for one delay length of time
 
     B = 1 #slope of intensity function
@@ -578,25 +576,25 @@ def neuron_population_output_avg(J_choice, tstop, dt, N, g, tau, E, tauD, initia
             lam[lam > 1 / dt] = 1 / dt  # requiring the range
             n = np.random.binomial(n=1, p=dt * lam)
         else:
-            if J_choice == 1:  # J(t) = g_bar * delta(t-tauD)
+            if J_choice == 1:  # J(t) = Jspace * delta(t-tauD)
                 v_new = v_old + dt * (-v_old + E) + J[0, :] - n * (v_old - v_r)
-            elif J_choice == 2 or J_choice == 3:  # J(t) = g_bar/tau * E^(-(t-tauD)/tau) * H(t-tauD)
+            elif J_choice == 2 or J_choice == 3:  # J(t) = Jspace/tau * E^(-(t-tauD)/tau) * H(t-tauD)
                 v_new = v_old + dt * (-v_old + E + J[0, :]) - n * (v_old - v_r)
             lam = intensity_func(v_new, B=B, v_th=v_th, p=p)
             lam[lam > 1 / dt] = 1 / dt  # requiring the range
             n = np.random.binomial(n=1, p=dt * lam)
 
         # Updating Different J(t) Functions:
-        if J_choice==1: # J(t) = g_bar * delta(t-tauD)
+        if J_choice==1: # J(t) = Jspace * delta(t-tauD)
             if t < Nt-Ndelay:
-                J[Ndelay] = J[Ndelay] + g_bar @ n
-        elif J_choice==2: # J(t) = g_bar/tau * E^(-(t-tauD)/tau) * H(t-tauD)
+                J[Ndelay] = J[Ndelay] + Jspace @ n
+        elif J_choice==2: # J(t) = Jspace/tau * E^(-(t-tauD)/tau) * H(t-tauD)
             if t < Nt - Ndelay:
-                J[Ndelay] += g_bar.dot(n)/tau
+                J[Ndelay] += Jspace.dot(n)/tau
             J[1] += J[0] * (1-dt/tau)
-        elif J_choice==3: # J(t) = g_bar 1/tau^2 t e^(-t/tau) H(t)
+        elif J_choice==3: # J(t) = Jspace 1/tau^2 t e^(-t/tau) H(t)
             if t < Nt - Ndelay:
-                nu[Ndelay] += g_bar.dot(n)/tau**2
+                nu[Ndelay] += Jspace.dot(n)/tau**2
             nu[1] += nu[0] + dt*(-2 * nu[0]/tau - J[0]/(tau ** 2))#todo fix so dont save whole array
             J[1] += J[0] + dt*nu[0]
 
@@ -655,6 +653,7 @@ def plot_pop(spktimes, dt, plotevery=1, xlim=None, ylim = None, xlabel=True, yla
 
     return
 
+
 def plot_single_neuron(v, t_max, dt, i, color, linewidth=1):
     '''
     plots the voltage of the ith neuron
@@ -675,6 +674,7 @@ def plot_single_neuron(v, t_max, dt, i, color, linewidth=1):
 
     return
 
+
 def plot_avg(t_max, dt, v, color='k', linewidth=1):
     '''Plots the population average voltage against time
 
@@ -694,6 +694,7 @@ def plot_avg(t_max, dt, v, color='k', linewidth=1):
     #plt.ylabel("Voltage")
     #plt.xlabel("Time")
     return
+
 
 def plot_spike_times(y_value, spktimes, tauD, dt, check ,i, color, labelsize=8):
     '''Function to plot tick marks for the spike times of neuron i
@@ -766,7 +767,6 @@ def plot_neuron_spike_histogram(spike_data,dt):
     return
 
 
-
 if __name__ == '__main__':
     t_max = 50
     dt = 0.01
@@ -812,6 +812,4 @@ if __name__ == '__main__':
     plot_avg(t_max, dt, vpop, N, J)
     plt.xlim([0, t_max])
 
-    plt.show()
-
-
+    plt.show()=

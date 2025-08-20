@@ -31,7 +31,7 @@ def build_fig_syn_respose():
     N = 1000
     g = -3  # height of conductance spike
     tau = 1  # width of conductance spike
-    tauD = .2  # the time delay of the conductivity
+    tauD = .2  # the time delay of the synaptic filter
     E = 3  # Resting Voltage
     initial = 1.5
 
