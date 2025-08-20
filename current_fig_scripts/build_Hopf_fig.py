@@ -26,7 +26,7 @@ def build_Hopffig_v1():
     N = 500
     g = -4  # height of conductance spike
     tau = 0  # width of conductance spike
-    tauD = 2  # the time delay of the conductivity
+    tauD = 2  # the time delay of the synaptic filter
     E = 3  # Resting Voltage
 
     v0 = (g + np.sqrt(g ** 2 + 4 * (E - g))) / 2
@@ -376,7 +376,7 @@ def build_Hopffig_v2():
     N = 500
     g = -4  # height of conductance spike
     tau = 0  # width of conductance spike
-    tauD = 1  # the time delay of the conductivity
+    tauD = 1  # the time delay of the synaptic filter
     E = 2  # Resting Voltage
     J_osc = -6
     initial = 1.38

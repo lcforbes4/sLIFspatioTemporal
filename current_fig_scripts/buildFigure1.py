@@ -53,7 +53,7 @@ def build_fig_1_v1():
     N = 1000
     g = -4  # height of conductance spike
     tau = 0  # width of conductance spike
-    tauD = 0.2  # the time delay of the conductivity
+    tauD = 0.2  # the time delay of the synaptic filter
     E = 3  # Resting Voltage
     initial = 1.5
 
@@ -150,7 +150,7 @@ def build_fig_1_v2():
     N = 1000
     g = -4  # height of conductance spike
     tau = 0  # width of conductance spike
-    tauD = 0.2  # the time delay of the conductivity
+    tauD = 0.2  # the time delay of the synaptic filter
     E = 3  # Resting Voltage
     initial = 1.5
 

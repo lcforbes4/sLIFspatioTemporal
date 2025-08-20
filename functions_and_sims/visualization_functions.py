@@ -4,10 +4,10 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from functions_and_sims.spiking_network_functions import generate_spatial_connectivity_mat
 
-def plot_network_graph_diagram(g_bar):
+def plot_network_graph_diagram(Jspace):
 
     # Create a directed graph from the adjacency matrix
-    G = nx.from_numpy_array(g_bar, create_using=nx.Graph)
+    G = nx.from_numpy_array(Jspace, create_using=nx.Graph)
 
     # Create a spring layout for the graph
     #pos = nx.spring_layout(G,k=50)
@@ -138,13 +138,11 @@ if __name__ == '__main__':
     N = 15  # Number of neurons
     g=4
     connection_prob = 0.5
-    #g_bar = np.random.binomial(n=1, p=connection_prob, size=(N, N)) * g / connection_prob / N
-    #np.fill_diagonal(g_bar, 0)  # make sure connection =0 if i=j
 
-    g_bar = generate_spatial_connectivity_mat(1,1,N)
-    np.fill_diagonal(g_bar, 0)  # make sure connection =0 if i=j
+    Jspace = generate_spatial_connectivity_mat(1,1,N)
+    np.fill_diagonal(Jspace, 0)  # make sure connection =0 if i=j
 
     plt.figure(figsize=(4, 4))
-    plot_network_graph_diagram(g_bar)
+    plot_network_graph_diagram(Jspace)
     plt.title("Force-Directed Graph of Neuron Connections")
     plt.show()
