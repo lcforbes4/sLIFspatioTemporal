@@ -812,4 +812,4 @@ if __name__ == '__main__':
     plot_avg(t_max, dt, vpop, N, J)
     plt.xlim([0, t_max])
 
-    plt.show()=
+    plt.show()
