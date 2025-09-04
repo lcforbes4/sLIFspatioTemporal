@@ -12,21 +12,23 @@ def compute_mean_centered_l2_norm(signal, tvals):
     result = np.sqrt(scipy.integrate.simpson(mean_centered_signal ** 2,x=tvals)),  # L2 Norm
     return result
 
-num_of_points =4#J=8, others=10
-tstop = 100 #300
+num_of_points = 5
+tstop = 500 #100 #500
 dt = 0.01
 N = 1000
+J_choice = 1 #delta fucntion
 
 # Make sure these param values match which BIF-TOOL data you're comparing against
-J_choice = 1
-param_min = 1.2#J-5 #E1.05 #delay=.9
-param_max = 1.6#J-3.25 #delay=2
-# go change varied param down in loop
+param_name_to_vary = 'J0' #'J0','E', or 'delay'
+param_min = -5 #J=-5 #E=1.05 #delay=.9
+param_max = -3.25 #J=-3.25  #E=4.1 #delay=2
 delay = 2
-g = -3.24
-tau = 0.5
+g = -4
+tau = 1
 E = 3
 initial = 1.6
+save = 0
+
 
 num_oscillations = 10 # the number of oscillations at the end of simulation to average over for period,min-max,etc
 param_list = np.linspace(param_min, param_max, num_of_points)
@@ -34,28 +36,33 @@ per = np.zeros(len(param_list))
 average_min_amplitude = np.zeros(len(param_list))
 average_max_amplitude= np.zeros(len(param_list))
 average_l2_norm = np.zeros(len(param_list))
-num_oscillations += 1
-g_bar = generate_connectivity_mat(g,0.5,N)
 
-#plt.figure(figsize=(12, 5))
-#plt.plot(np.linspace(0,tstop,int(tstop/dt)),np.sin(np.linspace(0,tstop,int(tstop/dt))))
+if param_name_to_vary == 'J0': #varying J0
+    g_bar = generate_connectivity_mat(param_list[0],0.5,N)
+else:
+    g_bar = generate_connectivity_mat(g, 0.5, N)
 
 
 for i in range(0,len(param_list)):
-    initial = param_list[i] #!!!g not J
+    #simulate
+    if param_name_to_vary == 'J0':
+        if i > 0:
+            g_bar = (g_bar / param_list[i - 1]) * param_list[i]
+        v_avg, spktimes, J = neuron_population_output_avg(J_choice, tstop, dt, N, param_list[i], tau, E, delay, initial,
+                                                          g_bar)
+    elif param_name_to_vary =='E':
+        v_avg, spktimes, J = neuron_population_output_avg(J_choice, tstop, dt, N, g, tau, param_list[i], delay, initial,
+                                                          g_bar)
+    elif param_name_to_vary =='delay':
+        v_avg, spktimes, J = neuron_population_output_avg(J_choice, tstop, dt, N, g, tau, E, param_list[i], initial,
+                                                          g_bar)
 
-    # Simulate
-    print('b4')
-    v_avg, spktimes, J = neuron_population_output_avg(J_choice, tstop, dt, N, g, tau, E, delay, initial, g_bar)
-    #v_avg = np.sin(np.linspace(0,tstop,int(tstop/dt)))
-    print('after')
+
+    v_avg, spktimes, J = neuron_population_output_avg(J_choice, tstop, dt, N, param_list[i], tau, E, delay, initial, g_bar)
     plt.figure(figsize=(12, 5))
     plt.plot(np.arange(0, tstop, dt),v_avg)
 
     # Compute Power Spectrum
-    #arr = int(len(v_avg)/8)
-    #nperseg = 2 ** (arr.bit_length() - 1)
-    #print(nperseg)
     nperseg = 2 ** (17)
     f, Pxx_den = signal.welch(np.transpose(v_avg), fs=1 / dt, nperseg=nperseg)
     #plt.figure(figsize=(12, 5))
@@ -72,7 +79,7 @@ for i in range(0,len(param_list)):
 
     # Calculate the time step and the number of oscillations
     oscillation_period = int(per[i] / dt)  # Estimate number of time points in one oscillation
-    last_oscillation_start = len(v_avg) - (oscillation_period * num_oscillations) #index at which your group of osc at end start
+    last_oscillation_start = len(v_avg) - (oscillation_period * (num_oscillations+1)) #index at which your group of osc at end start, add 1 to ignore last oscillation data for cleaner data
     last_oscillation_end = len(v_avg) - oscillation_period # index of when penultimate oscillation ends
 
     # Initialize lists for storing amplitude max/min and L2 norms
@@ -80,8 +87,8 @@ for i in range(0,len(param_list)):
     max_amplitudes = []
     l2_norms = []
 
-    # Loop over the last 5 oscillations
-    for j in range(num_oscillations-1):
+    # Loop over the last oscillations
+    for j in range(num_oscillations):
         start_idx = last_oscillation_start + j * oscillation_period
         end_idx = start_idx + oscillation_period
         if end_idx > len(v_avg):  # Check to prevent index overflow
@@ -121,31 +128,39 @@ for i in range(0,len(param_list)):
 plt.figure(figsize=(12, 5))
 
 # First plot: per vs param_list
-plt.subplot(1, 2, 1)
+plt.subplot(1, 3, 1)
 plt.plot(param_list, per, marker='o', label='Period')
-plt.xlabel('Parameter (E)')
+plt.xlabel('Parameter')
 plt.ylabel('Period')
 plt.title('Period vs Parameter')
 plt.grid()
 plt.legend()
 
 # Second plot: average min/max amplitude vs param_list
-plt.subplot(1, 2, 2)
+plt.subplot(1, 3, 2)
 plt.plot(param_list, average_min_amplitude, marker='o', label='Average Min Amplitude', color='blue')
 plt.plot(param_list, average_max_amplitude, marker='o', label='Average Max Amplitude', color='red')
-plt.xlabel('Parameter (E)')
+plt.xlabel('Parameter')
 plt.ylabel('Amplitude')
 plt.title('Average Min/Max Amplitude vs Parameter')
 plt.grid()
 plt.legend()
 
+# Third plot: L2 norm
+plt.subplot(1, 3, 3)
+plt.plot(param_list, average_l2_norm, marker='o', label='Average Min Amplitude', color='blue')
+plt.xlabel('Parameter')
+plt.ylabel('Amplitude')
+plt.title('Average Min/Max Amplitude vs Parameter')
+plt.grid()
 
-#save
-#np.save('alphaFuncCaseFigures/fig2data/alpha_func_varied_delay.npy', param_list)
-#np.save('alphaFuncCaseFigures/fig2data/alpha_func_period_varied_delay.npy', per)
-#np.save('alphaFuncCaseFigures/fig2data/alpha_func_min_amp_varied_delay.npy', average_min_amplitude)
-#np.save('alphaFuncCaseFigures/fig2data/alpha_func_max_amp_varied_delay.npy', average_max_amplitude)
-#np.save('alphaFuncCaseFigures/fig2data/alpha_func_l2_norm_varied_delay.npy', average_l2_norm)
+
+if save==1:
+    np.save(f'../current_fig_scripts/figHopf_data/saves_sim_data/delta_varied_{param_name_to_vary}.npy', param_list)
+    np.save(f'../current_fig_scripts/figHopf_data/saves_sim_data/delta_period_varied_{param_name_to_vary}.npy', per)
+    np.save(f'../current_fig_scripts/figHopf_data/saves_sim_data/delta_min_amp_varied_{param_name_to_vary}.npy', average_min_amplitude)
+    np.save(f'../current_fig_scripts/figHopf_data/saves_sim_data/delta_max_amp_varied_{param_name_to_vary}.npy', average_max_amplitude)
+    np.save(f'../current_fig_scripts/figHopf_data/saves_sim_data/delta_l2_norm_varied_{param_name_to_vary}.npy', average_l2_norm)
 
 # Show plots
 plt.tight_layout()

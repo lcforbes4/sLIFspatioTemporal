@@ -63,7 +63,7 @@ def build_bistab_fig_one_col():
     tstop = 5000
     vmean1 = np.load('figHopf_bistab_data/fwdbwdv1/mfield_J-3.1to-3_dt001.npy')
     plot_ramped_mean_field_vs_param(vmean1, tstop, dt, param_start1, param_end1, color='grey')
-    plot_bif_curve_J_vs_v(E, 'figHopf_data/matlab_data_v2/branch4_Jsave.mat')
+    plot_bif_curve_J_vs_v(E, 'figHopf_data/matlab_data/branch4_Jsave.mat')
 
     # Create a right-pointing arrow
     k = 0
@@ -82,7 +82,7 @@ def build_bistab_fig_one_col():
     param_start3 = -3.5
     param_end3 = -2.5
     plot_ramped_mean_field_vs_param(vpop3, 2000, dt, param_start3, param_end3, color='grey')
-    # plot_bif_curve(E, 'figHopf_data/matlab_data_v2/branch4_Jsave.mat')
+    # plot_bif_curve(E, 'figHopf_data/matlab_data/branch4_Jsave.mat')
 
     #shaded regions
     ax_spikingRampUp.axvspan(-3.267, -3.2, facecolor=bistab_region_color, alpha=0.3)
@@ -110,7 +110,7 @@ def build_bistab_fig_one_col():
     tstop = 5000
     vmean2 = np.load('figHopf_bistab_data/fwdbwdv1/mfield_J-3.04to-3.1_dt001.npy')
     plot_ramped_mean_field_vs_param(vmean2, tstop, dt, param_start2, param_end2, color='grey')
-    plot_bif_curve_J_vs_v(E, 'figHopf_data/matlab_data_v2/branch4_Jsave.mat')
+    plot_bif_curve_J_vs_v(E, 'figHopf_data/matlab_data/branch4_Jsave.mat')
     ax_MFrampDown.axvspan(-3.05, -3.03, facecolor=bistab_region_color, alpha=0.3)
     ax_MFrampDown.axvspan(mean_zoom_start, mean_zoom_end, facecolor=slice_color, alpha=0.3)
 
@@ -129,7 +129,7 @@ def build_bistab_fig_one_col():
     param_start4 = -2.5
     param_end4 = -3.5
     plot_ramped_mean_field_vs_param(vpop4, 2000, dt, param_start4, param_end4, color='grey')
-    # plot_bif_curve(E, 'figHopf_data/matlab_data_v2/branch4_Jsave.mat')
+    # plot_bif_curve(E, 'figHopf_data/matlab_data/branch4_Jsave.mat')
     ax_spikingRampDown.axvspan(-3.267, -3.2, facecolor=bistab_region_color, alpha=0.3)
     ax_spikingRampDown.axvspan(spknet_zoom_start, spknet_zoom_end, facecolor=slice_color, alpha=0.3)
 
@@ -309,7 +309,7 @@ def build_bistab_fig_v2():
     tstop = 5000
     vmean1 = np.load('figHopf_bistab_data/fwdbwdv1/mfield_J-3.1to-3_dt001.npy')
     plot_ramped_mean_field_vs_param(vmean1, tstop, dt, param_start1, param_end1, color='grey')
-    plot_bif_curve_J_vs_v(E, 'figHopf_data/matlab_data_v2/branch4_Jsave.mat')
+    plot_bif_curve_J_vs_v(E, 'figHopf_data/matlab_data/branch4_Jsave.mat')
 
     # Create a right-pointing arrow
     k = 0
@@ -328,7 +328,7 @@ def build_bistab_fig_v2():
     param_start3 = -3.5
     param_end3 = -2.5
     plot_ramped_mean_field_vs_param(vpop3, 2000, dt, param_start3, param_end3, color='grey')
-    # plot_bif_curve(E, 'figHopf_data/matlab_data_v2/branch4_Jsave.mat')
+    # plot_bif_curve(E, 'figHopf_data/matlab_data/branch4_Jsave.mat')
 
     #shaded regions
     ax_spikingRampUp.axvspan(-3.267, -3.2, facecolor=bistab_region_color, alpha=0.3)
@@ -356,7 +356,7 @@ def build_bistab_fig_v2():
     tstop = 5000
     vmean2 = np.load('figHopf_bistab_data/fwdbwdv1/mfield_J-3.04to-3.1_dt001.npy')
     plot_ramped_mean_field_vs_param(vmean2, tstop, dt, param_start2, param_end2, color='grey')
-    plot_bif_curve_J_vs_v(E, 'figHopf_data/matlab_data_v2/branch4_Jsave.mat')
+    plot_bif_curve_J_vs_v(E, 'figHopf_data/matlab_data/branch4_Jsave.mat')
     ax_MFrampDown.axvspan(-3.05, -3.03, facecolor=bistab_region_color, alpha=0.3)
     ax_MFrampDown.axvspan(mean_zoom_start, mean_zoom_end, facecolor=slice_color, alpha=0.3)
 
@@ -375,7 +375,7 @@ def build_bistab_fig_v2():
     param_start4 = -2.5
     param_end4 = -3.5
     plot_ramped_mean_field_vs_param(vpop4, 2000, dt, param_start4, param_end4, color='grey')
-    # plot_bif_curve(E, 'figHopf_data/matlab_data_v2/branch4_Jsave.mat')
+    # plot_bif_curve(E, 'figHopf_data/matlab_data/branch4_Jsave.mat')
     ax_spikingRampDown.axvspan(-3.267, -3.2, facecolor=bistab_region_color, alpha=0.3)
     ax_spikingRampDown.axvspan(spknet_zoom_start, spknet_zoom_end, facecolor=slice_color, alpha=0.3)
 

@@ -118,7 +118,7 @@ def build_Hopffig_v1():
     ax10 = fig2.add_subplot(gs[0:4, 2:4])
 
     # Import and prep data from matlab file
-    val_list = get_periodic_branch_points('figHopf_data/matlab_data_v2/branch4_Jsave.mat', 'J_value', 0, 1)
+    val_list = get_periodic_branch_points('figHopf_data/matlab_data/branch4_Jsave.mat', 'J_value', 0, 1)
 
     # Get J value of Hopf Point
     Hopf_J_val = val_list[0]['J_value']
@@ -141,9 +141,9 @@ def build_Hopffig_v1():
     plt.plot(val_list[j:]['J_value'], val_list[j:]['Min'], 'k-')  # min stable
 
     # Plot max min from population spiking simulation
-    param_list = np.load('figHopf_data/saves_sim_data_v2/delta_varied_J.npy')
-    average_min_amplitude = np.load('figHopf_data/saves_sim_data_v2/delta_min_amp_varied_J.npy')
-    average_max_amplitude = np.load('figHopf_data/saves_sim_data_v2/delta_max_amp_varied_J.npy')
+    param_list = np.load('figHopf_data/saves_sim_data/delta_varied_J.npy')
+    average_min_amplitude = np.load('figHopf_data/saves_sim_data/delta_min_amp_varied_J.npy')
+    average_max_amplitude = np.load('figHopf_data/saves_sim_data/delta_max_amp_varied_J.npy')
     plt.plot(param_list, average_min_amplitude, color=data_dot_color, marker='o', linestyle=' ',
              label='Average Min Amplitude')
     plt.plot(param_list, average_max_amplitude, color=data_dot_color, marker='o', linestyle=' ',
@@ -164,7 +164,7 @@ def build_Hopffig_v1():
     plt.plot(val_list[:j]['J_value'], val_list[:j]['L2'], 'k--', label='DDE-BIFTOOL')  # l2 norm
     plt.plot(val_list[j:]['J_value'], val_list[j:]['L2'], 'k-', label='DDE-BIFTOOL')  # l2 norm
 
-    l2_sim = np.load('figHopf_data/saves_sim_data_v2/delta_l2_norm_varied_J.npy')
+    l2_sim = np.load('figHopf_data/saves_sim_data/delta_l2_norm_varied_J.npy')
     plt.plot(param_list, l2_sim, color=data_dot_color, marker='o', linestyle=' ', label='Period')
     print(l2_sim)
 
@@ -179,7 +179,7 @@ def build_Hopffig_v1():
     plt.plot(val_list[:j]['J_value'], val_list[:j]['Period'], 'k--')  # period
     plt.plot(val_list[j:]['J_value'], val_list[j:]['Period'], 'k-')  # period
 
-    per_sim = np.load('figHopf_data/saves_sim_data_v2/delta_period_varied_J.npy')
+    per_sim = np.load('figHopf_data/saves_sim_data/delta_period_varied_J.npy')
     plt.plot(param_list, per_sim, color=data_dot_color, marker='o', linestyle=' ', label='Period')
 
     plt.ylabel("Period")
@@ -188,7 +188,7 @@ def build_Hopffig_v1():
 
     # 7. Varied E Bifurcation Diagram
     ax13 = fig2.add_subplot(gs[0:4, 4:6])
-    val_list = get_periodic_branch_points('figHopf_data/matlab_data_v2/branch4_Esave.mat', 'E_value', 1, 1)
+    val_list = get_periodic_branch_points('figHopf_data/matlab_data/branch4_Esave.mat', 'E_value', 1, 1)
     # Get E value of Hopf Point
     Hopf_E_val = val_list[0]['E_value']
     E_min = np.min(val_list[:]['E_value'])
@@ -215,9 +215,9 @@ def build_Hopffig_v1():
     # plt.xlabel("E")
 
     # Plot max min from population spiking simulation
-    param_list = np.load('figHopf_data/saves_sim_data_v2/delta_varied_E.npy')
-    average_min_amplitude = np.load('figHopf_data/saves_sim_data_v2/delta_min_amp_varied_E.npy')
-    average_max_amplitude = np.load('figHopf_data/saves_sim_data_v2/delta_max_amp_varied_E.npy')
+    param_list = np.load('figHopf_data/saves_sim_data/delta_varied_E.npy')
+    average_min_amplitude = np.load('figHopf_data/saves_sim_data/delta_min_amp_varied_E.npy')
+    average_max_amplitude = np.load('figHopf_data/saves_sim_data/delta_max_amp_varied_E.npy')
     plt.plot(param_list[:-1], average_min_amplitude[:-1], color=data_dot_color, marker='o', linestyle=' ',
              label='Average Min Amplitude')
     plt.plot(param_list[:-1], average_max_amplitude[:-1], color=data_dot_color, marker='o', linestyle=' ',
@@ -237,7 +237,7 @@ def build_Hopffig_v1():
     plt.plot(val_list[j:]['E_value'], val_list[j:]['L2'], 'k-', label='DDE-BIFTOOL')  # l2 norm
     # plt.ylabel("L2 Norm")
     # plt.xlabel("E")
-    l2_sim = np.load('figHopf_data/saves_sim_data_v2/delta_l2_norm_varied_E.npy')
+    l2_sim = np.load('figHopf_data/saves_sim_data/delta_l2_norm_varied_E.npy')
     plt.plot(param_list, l2_sim, color=data_dot_color, marker='o', linestyle=' ', label='Period')
 
     plt.xlim([0, E_max])
@@ -249,7 +249,7 @@ def build_Hopffig_v1():
     plt.plot(val_list[j:]['E_value'], val_list[j:]['Period'], 'k-')  # period
     # plt.ylabel("Period")
 
-    per_sim = np.load('figHopf_data/saves_sim_data_v2/delta_period_varied_E.npy')
+    per_sim = np.load('figHopf_data/saves_sim_data/delta_period_varied_E.npy')
     plt.plot(param_list[:-1], per_sim[:-1], color=data_dot_color, marker='o', linestyle=' ', label='Period')
 
     plt.xlabel("Reversal Potential E")
@@ -258,7 +258,7 @@ def build_Hopffig_v1():
 
     # 10. Varied delay Bifurcation Diagram
     ax16 = fig2.add_subplot(gs[0:4, 6:8])
-    val_list = get_periodic_branch_points('figHopf_data/matlab_data_v2/branch4_delaysave.mat', 'tau_vals', 2, 1)
+    val_list = get_periodic_branch_points('figHopf_data/matlab_data/branch4_delaysave.mat', 'tau_vals', 2, 1)
     # Get E value of Hopf Point
     Hopf_tau_val = val_list[0]['tau_vals']
     tau_min = 0  # np.min(val_list[:]['tau_vals'])
@@ -282,9 +282,9 @@ def build_Hopffig_v1():
     plt.plot(val_list[j:]['tau_vals'], val_list[j:]['Min'], 'k-')  # min stable
 
     # Plot max min from population spiking simulation
-    param_list = np.load('figHopf_data/saves_sim_data_v2/delta_varied_delay.npy')
-    average_min_amplitude = np.load('figHopf_data/saves_sim_data_v2/delta_min_amp_varied_delay.npy')
-    average_max_amplitude = np.load('figHopf_data/saves_sim_data_v2/delta_max_amp_varied_delay.npy')
+    param_list = np.load('figHopf_data/saves_sim_data/delta_varied_delay.npy')
+    average_min_amplitude = np.load('figHopf_data/saves_sim_data/delta_min_amp_varied_delay.npy')
+    average_max_amplitude = np.load('figHopf_data/saves_sim_data/delta_max_amp_varied_delay.npy')
     plt.plot(param_list, average_min_amplitude, color=data_dot_color, marker='o', linestyle=' ',
              label='Average Min Amplitude')
     plt.plot(param_list, average_max_amplitude, color=data_dot_color, marker='o', linestyle=' ',
@@ -306,7 +306,7 @@ def build_Hopffig_v1():
     plt.plot(val_list[j:]['tau_vals'], val_list[j:]['L2'], 'k-', label='DDE-BIFTOOL')  # l2 norm
     # plt.ylabel("L2 Norm")
     # plt.xlabel("Tau")
-    l2_sim = np.load('figHopf_data/saves_sim_data_v2/delta_l2_norm_varied_delay.npy')
+    l2_sim = np.load('figHopf_data/saves_sim_data/delta_l2_norm_varied_delay.npy')
     plt.plot(param_list, l2_sim, color=data_dot_color, marker='o', linestyle=' ', label='Period')
 
     plt.xlim([tau_min, tau_max])
@@ -317,7 +317,7 @@ def build_Hopffig_v1():
     plt.plot(val_list[:j]['tau_vals'], val_list[:j]['Period'], 'k--')  # period
     plt.plot(val_list[j:]['tau_vals'], val_list[j:]['Period'], 'k-')  # period
     # plt.ylabel("Period")
-    per_sim = np.load('figHopf_data/saves_sim_data_v2/delta_period_varied_delay.npy')
+    per_sim = np.load('figHopf_data/saves_sim_data/delta_period_varied_delay.npy')
     plt.plot(param_list, per_sim, color=data_dot_color, marker='o', linestyle=' ', label='Period')
 
     plt.xlabel("Delay Time D")
@@ -454,7 +454,7 @@ def build_Hopffig_v2():
     ax_J0BifDiag = fig2.add_subplot(gs_J0BifDiag)
 
     # Import and prep data from matlab file
-    val_list = get_periodic_branch_points('figHopf_data/matlab_data_v2/branch4_Jsave.mat', 'J_value', 0, 1)
+    val_list = get_periodic_branch_points('figHopf_data/matlab_data/branch4_Jsave.mat', 'J_value', 0, 1)
 
     # Get J value of Hopf Point
     Hopf_J_val = val_list[0]['J_value']
@@ -477,9 +477,9 @@ def build_Hopffig_v2():
     plt.plot(val_list[j:]['J_value'], val_list[j:]['Min'], 'k-', linewidth=linewidth)  # min stable
 
     # Plot max min from population spiking simulation
-    param_list = np.load('figHopf_data/saves_sim_data_v2/delta_varied_J.npy')
-    average_min_amplitude = np.load('figHopf_data/saves_sim_data_v2/delta_min_amp_varied_J.npy')
-    average_max_amplitude = np.load('figHopf_data/saves_sim_data_v2/delta_max_amp_varied_J.npy')
+    param_list = np.load('figHopf_data/saves_sim_data/delta_varied_J.npy')
+    average_min_amplitude = np.load('figHopf_data/saves_sim_data/delta_min_amp_varied_J.npy')
+    average_max_amplitude = np.load('figHopf_data/saves_sim_data/delta_max_amp_varied_J.npy')
     plt.plot(param_list, average_min_amplitude, color=data_dot_color, marker='o', linestyle=' ',
              label='Average Min Amplitude', ms =datadotsize)
     plt.plot(param_list, average_max_amplitude, color=data_dot_color, marker='o', linestyle=' ',
@@ -528,7 +528,7 @@ def build_Hopffig_v2():
     plt.plot(val_list[j:]['J_value'], val_list[j:]['L2'], 'k-', label='DDE-BIFTOOL', linewidth=linewidth)  # l2 norm
     #J_vals, period, l2 = period_varied_J(1, E, -3.12, -3.03, tau, tauD, t_max, dt)
 
-    l2_sim = np.load('figHopf_data/saves_sim_data_v2/delta_l2_norm_varied_J.npy')
+    l2_sim = np.load('figHopf_data/saves_sim_data/delta_l2_norm_varied_J.npy')
     plt.plot(param_list, l2_sim, color=data_dot_color, marker='o', linestyle=' ', label='Period', ms =datadotsize)
     print(l2_sim)
 
@@ -546,7 +546,7 @@ def build_Hopffig_v2():
     plt.plot(val_list[:j]['J_value'], val_list[:j]['Period'], 'k--', linewidth=linewidth)  # period
     plt.plot(val_list[j:]['J_value'], val_list[j:]['Period'], 'k-', linewidth=linewidth)  # period
 
-    per_sim = np.load('figHopf_data/saves_sim_data_v2/delta_period_varied_J.npy')
+    per_sim = np.load('figHopf_data/saves_sim_data/delta_period_varied_J.npy')
     plt.plot(param_list, per_sim, color=data_dot_color, marker='o', linestyle=' ', label='Period', ms =datadotsize)
 
     plt.ylabel("Oscillation Period", fontsize=fontsize)
@@ -556,7 +556,7 @@ def build_Hopffig_v2():
 
     # 7. Varied E Bifurcation Diagram
     ax_EBifDiag = fig2.add_subplot(gs_EBifDiag)
-    val_list = get_periodic_branch_points('figHopf_data/matlab_data_v2/branch4_Esave.mat', 'E_value', 1, 1)
+    val_list = get_periodic_branch_points('figHopf_data/matlab_data/branch4_Esave.mat', 'E_value', 1, 1)
     # Get E value of Hopf Point
     Hopf_E_val = val_list[0]['E_value']
     E_min = np.min(val_list[:]['E_value'])
@@ -584,9 +584,9 @@ def build_Hopffig_v2():
     plt.tick_params(labelsize=labelsize)
 
     # Plot max min from population spiking simulation
-    param_list = np.load('figHopf_data/saves_sim_data_v2/delta_varied_E.npy')
-    average_min_amplitude = np.load('figHopf_data/saves_sim_data_v2/delta_min_amp_varied_E.npy')
-    average_max_amplitude = np.load('figHopf_data/saves_sim_data_v2/delta_max_amp_varied_E.npy')
+    param_list = np.load('figHopf_data/saves_sim_data/delta_varied_E.npy')
+    average_min_amplitude = np.load('figHopf_data/saves_sim_data/delta_min_amp_varied_E.npy')
+    average_max_amplitude = np.load('figHopf_data/saves_sim_data/delta_max_amp_varied_E.npy')
     plt.plot(param_list[:-1], average_min_amplitude[:-1], color=data_dot_color, marker='o', linestyle=' ',
              label='Average Min Amplitude', ms =datadotsize)
     plt.plot(param_list[:-1], average_max_amplitude[:-1], color=data_dot_color, marker='o', linestyle=' ',
@@ -607,7 +607,7 @@ def build_Hopffig_v2():
     plt.ylabel(r"$||v-v_+||_{L^2}$", fontsize=fontsize)
     plt.xlabel(r"Resting Poten. ($E$)", fontsize=fontsize)
     plt.tick_params(labelsize=labelsize)
-    l2_sim = np.load('figHopf_data/saves_sim_data_v2/delta_l2_norm_varied_E.npy')
+    l2_sim = np.load('figHopf_data/saves_sim_data/delta_l2_norm_varied_E.npy')
     plt.plot(param_list, l2_sim, color=data_dot_color, marker='o', linestyle=' ', label='Period', ms =datadotsize)
 
     plt.xlim([0, E_max])
@@ -618,7 +618,7 @@ def build_Hopffig_v2():
     plt.plot(val_list[:j]['E_value'], val_list[:j]['Period'], 'k--', linewidth=linewidth)  # period
     plt.plot(val_list[j:]['E_value'], val_list[j:]['Period'], 'k-', linewidth=linewidth)  # period
 
-    per_sim = np.load('figHopf_data/saves_sim_data_v2/delta_period_varied_E.npy')
+    per_sim = np.load('figHopf_data/saves_sim_data/delta_period_varied_E.npy')
     plt.plot(param_list[:-1], per_sim[:-1], color=data_dot_color, marker='o', linestyle=' ', label='Period', ms =datadotsize)
 
     plt.ylabel("Oscillation Period", fontsize=fontsize)
@@ -629,7 +629,7 @@ def build_Hopffig_v2():
 
     # 10. Varied delay Bifurcation Diagram
     ax_DBifDiag = fig2.add_subplot(gs_DBifDiag)
-    val_list = get_periodic_branch_points('figHopf_data/matlab_data_v2/branch4_delaysave.mat', 'tau_vals', 2, 1)
+    val_list = get_periodic_branch_points('figHopf_data/matlab_data/branch4_delaysave.mat', 'tau_vals', 2, 1)
     # Get E value of Hopf Point
     Hopf_tau_val = val_list[0]['tau_vals']
     tau_min = 0  # np.min(val_list[:]['tau_vals'])
@@ -653,9 +653,9 @@ def build_Hopffig_v2():
     plt.plot(val_list[j:]['tau_vals'], val_list[j:]['Min'], 'k-', linewidth=linewidth)  # min stable
 
     # Plot max min from population spiking simulation
-    param_list = np.load('figHopf_data/saves_sim_data_v2/delta_varied_delay.npy')
-    average_min_amplitude = np.load('figHopf_data/saves_sim_data_v2/delta_min_amp_varied_delay.npy')
-    average_max_amplitude = np.load('figHopf_data/saves_sim_data_v2/delta_max_amp_varied_delay.npy')
+    param_list = np.load('figHopf_data/saves_sim_data/delta_varied_delay.npy')
+    average_min_amplitude = np.load('figHopf_data/saves_sim_data/delta_min_amp_varied_delay.npy')
+    average_max_amplitude = np.load('figHopf_data/saves_sim_data/delta_max_amp_varied_delay.npy')
     plt.plot(param_list, average_min_amplitude, color=data_dot_color, marker='o', linestyle=' ',
              label='Average Min Amplitude', ms =datadotsize)
     plt.plot(param_list, average_max_amplitude, color=data_dot_color, marker='o', linestyle=' ',
@@ -677,7 +677,7 @@ def build_Hopffig_v2():
     plt.plot(val_list[:j]['tau_vals'], val_list[:j]['L2'], 'k--', label='DDE-BIFTOOL', linewidth=linewidth)  # l2 norm
     plt.plot(val_list[j:]['tau_vals'], val_list[j:]['L2'], 'k-', label='DDE-BIFTOOL', linewidth=linewidth)  # l2 norm
 
-    l2_sim = np.load('figHopf_data/saves_sim_data_v2/delta_l2_norm_varied_delay.npy')
+    l2_sim = np.load('figHopf_data/saves_sim_data/delta_l2_norm_varied_delay.npy')
     plt.plot(param_list, l2_sim, color=data_dot_color, marker='o', linestyle=' ', label='Period', ms =datadotsize)
 
     plt.ylabel(r"$||v-v_+||_{L^2}$", fontsize=fontsize)
@@ -691,7 +691,7 @@ def build_Hopffig_v2():
     plt.plot(val_list[:j]['tau_vals'], val_list[:j]['Period'], 'k--', linewidth=linewidth)  # period
     plt.plot(val_list[j:]['tau_vals'], val_list[j:]['Period'], 'k-', linewidth=linewidth)  # period
 
-    per_sim = np.load('figHopf_data/saves_sim_data_v2/delta_period_varied_delay.npy')
+    per_sim = np.load('figHopf_data/saves_sim_data/delta_period_varied_delay.npy')
     plt.plot(param_list, per_sim, color=data_dot_color, marker='o', linestyle=' ', label='Period', ms =datadotsize)
 
     plt.ylabel("Oscillation Period", fontsize=fontsize)

@@ -148,7 +148,7 @@ def spiking_bistable_pulse_data_save():
     plt.show()
 
 def MF_and_spk_ramp_data_save():
-    save = 0
+    save = 1
 
     # Parameters
     J_choice = 1  # 1- delta, 2-delayed exp, 3-alpha function
@@ -202,40 +202,40 @@ def MF_and_spk_ramp_data_save():
     if ramping_param_ind ==1:
         ramp_param ='J'
     if save ==1:
-        np.save(f'spktimesfwd_N:{N}_dt:{dt}_J:{J}_E:{E}_D:{delay}_rampingIn{ramp_param}from{param_start3}to{param_end3}.npy',vpop2)
-        np.save(f'spktimesbwd_N:{N}_dt:{dt}_J:{J}_E:{E}_D:{delay}_rampingIn{ramp_param}from{param_start4}to{param_end4}.npy', vpop3)
-        np.save(f'mfieldFwd_N:{N}_dt:{dt}_J:{J}_E:{E}_D:{delay}_rampingIn{ramp_param}from{param_start1}to{param_end1}.npy', vmean1)
-        np.save(f'mfieldBwd_N:{N}_dt:{dt}_J:{J}_E:{E}_D:{delay}_rampingIn{ramp_param}from{param_start2}to{param_end2}.npy', vmean2)
+        np.save(f'../current_fig_scripts/figHopf_bistab_data/fwdbwdv1/spktimesfwd_N:{N}_dt:{dt}_J:{J}_E:{E}_D:{delay}_rampingIn{ramp_param}from{param_start3}to{param_end3}.npy',vpop2)
+        np.save(f'../current_fig_scripts/figHopf_bistab_data/fwdbwdv1/spktimesbwd_N:{N}_dt:{dt}_J:{J}_E:{E}_D:{delay}_rampingIn{ramp_param}from{param_start4}to{param_end4}.npy', vpop3)
+        np.save(f'../current_fig_scripts/figHopf_bistab_data/fwdbwdv1/mfieldFwd_N:{N}_dt:{dt}_J:{J}_E:{E}_D:{delay}_rampingIn{ramp_param}from{param_start1}to{param_end1}.npy', vmean1)
+        np.save(f'../current_fig_scripts/figHopf_bistab_data/fwdbwdv1/mfieldBwd_N:{N}_dt:{dt}_J:{J}_E:{E}_D:{delay}_rampingIn{ramp_param}from{param_start2}to{param_end2}.npy', vmean2)
 
     fig = plt.figure(layout='constrained')
     gs = GridSpec(2, 2, figure=fig)
 
     ax5 = fig.add_subplot(gs[0, 1])
     plot_ramped_mean_field_vs_param(vmean1, tstop, dt, param_start1, param_end1, color='grey')
-    plot_bif_curve_J_vs_v(E, '../current_fig_scripts/figHopf_data/matlab_data_v2/branch4_Jsave.mat')
+    plot_bif_curve_J_vs_v(E, '../current_fig_scripts/figHopf_data/matlab_data/branch4_Jsave.mat')
     plt.xlim([param_start1, param_end1])
     plt.ylim([0.8, 1.75])
 
     ax6 = fig.add_subplot(gs[1, 1])
     plot_ramped_mean_field_vs_param(vmean2, tstop, dt, param_start2, param_end2, color='grey')
-    plot_bif_curve_J_vs_v(E, '../current_fig_scripts/figHopf_data/matlab_data_v2/branch4_Jsave.mat')
+    plot_bif_curve_J_vs_v(E, '../current_fig_scripts/figHopf_data/matlab_data/branch4_Jsave.mat')
     plt.xlim([param_end2, param_end1])
     plt.ylim([0.8, 1.75])
 
     ax7 = fig.add_subplot(gs[0, 0])
     plot_ramped_mean_field_vs_param(vpop2, tstop, dt, param_start3, param_end3, color='grey')
-    #plot_bif_curve_J_vs_v(E, '../current_fig_scripts/figHopf_data/matlab_data_v2/branch4_Jsave.mat')
+    #plot_bif_curve_J_vs_v(E, '../current_fig_scripts/figHopf_data/matlab_data/branch4_Jsave.mat')
     plt.xlim([param_start3, param_end3])
     plt.ylim([0.5, 1.75])
 
     ax8 = fig.add_subplot(gs[1, 0])
     plot_ramped_mean_field_vs_param(vpop3, tstop, dt, param_start4, param_end4, color='grey')
-    #plot_bif_curve_J_vs_v(E, '../current_fig_scripts/figHopf_data/matlab_data_v2/branch4_Jsave.mat')
+    #plot_bif_curve_J_vs_v(E, '../current_fig_scripts/figHopf_data/matlab_data/branch4_Jsave.mat')
     plt.xlim([param_end4, param_start4])
     plt.ylim([0.5, 1.75])
 
     # fig = plt.figure(layout='constrained')
-    # plot_bif_curve(E, 'deltaCaseFigures/figHopf_data/matlab_data_v2/branch4_Jsave.mat')
+    # plot_bif_curve(E, 'deltaCaseFigures/figHopf_data/matlab_data/branch4_Jsave.mat')
 
     plt.show()
 

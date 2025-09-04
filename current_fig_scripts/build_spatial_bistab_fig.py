@@ -348,7 +348,7 @@ def build_spatial_fig_v4():
 
     ax_HLraster = fig.add_subplot(gs_HLraster)  # Moved ax9 to row 2, col 4
     plt.text(0, 1.05, '●', transform=ax_HLraster.transAxes, fontsize=fontsize, fontweight='bold', va='bottom', ha='left')
-    vpop2 = np.load('spatial_fig_data/Bistab_HL_spiking_pop_voltages_J3.1_J10_E1.75.npy')
+    #vpop2 = np.load('spatial_fig_data/Bistab_HL_spiking_pop_voltages_J3.1_J10_E1.75.npy')
     spktimes2 = np.load('spatial_fig_data/Bistab_HL_spiking_pop_spk_times_J3.1_J10_E1.75.npy')
     tstop = 40
     plot_pop(spktimes2, 0.01, plotevery=5, fontsize=fontsize, ms=0.5)
