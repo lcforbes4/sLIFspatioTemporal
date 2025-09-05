@@ -111,15 +111,15 @@ def run_compare_and_save():
     Nx = 50  # MF discretization
     tau = 1  # width of conductance spike
     j_choice = 1  # 1- delta, 2- delayed exp, 3- alpha function
-    E = 10  # Resting Voltage
-    tauD = .2  # delay
-    g = -5  # height of conductance spike
-    J_1 = -25
+    E = 2  # Resting Voltage
+    tauD = 1  # delay
+    J_0 = -2  # height of conductance spike
+    J_1 = -8
     plot_xmin = 0
-    v = 0
-    IC_A = 0
+    v = 2
+    IC_A = 1
     IC_B = 1.5
-    name = 'SWTW'
+    name = 'TW'
 
     initial = np.zeros((int(tauD / dt), N))
     x = np.linspace(-np.pi, np.pi, N, endpoint=False)
@@ -127,10 +127,10 @@ def run_compare_and_save():
     for tt in range(0, int(tauD / dt)):
         initial[tt, :] = IC_A + IC_B * np.cos(x + np.pi / 2 + v * tt)
 
-    v0 = (g + np.sqrt(g ** 2 + 4 * (E - g))) / 2
+    v0 = (J_0 + np.sqrt(J_0 ** 2 + 4 * (E - J_0))) / 2
     print(v0 - E)
 
-    vpop, spktimes2, J = neuron_population(j_choice, t_max, dt, N, tau, E, tauD, initial, g, J_1)
+    vpop, spktimes2, J = neuron_population(j_choice, t_max, dt, N, tau, E, tauD, initial, J_0, J_1)
     # print(vpop)
     fig = plt.figure(layout='constrained')
     fig.set_size_inches(7, 3)  # width by height in inches
@@ -146,7 +146,7 @@ def run_compare_and_save():
     x = np.linspace(-np.pi, np.pi, Nx, endpoint=False)
     for tt in range(0, int(tauD / dt)):
         initial_MF[tt, :] = IC_A + IC_B * np.cos(x + np.pi / 2 + v * tt)
-    m = MF_spatial_sim(initial_MF[-1, :], initial_MF, int((t_max) / dt), Nx, int(tauD / dt), dt, g, J_1, E)
+    m = MF_spatial_sim(initial_MF[-1, :], initial_MF, int((t_max) / dt), Nx, int(tauD / dt), dt, J_0, J_1, E)
     norm = TwoSlopeNorm(vcenter=1, vmin=np.min(m), vmax=np.max(m))
     plt.imshow(m.T, aspect='auto', cmap='bwr', origin='lower', interpolation='none',
                extent=[0, t_max, -np.pi, np.pi], norm=norm)
@@ -154,8 +154,8 @@ def run_compare_and_save():
     plt.xlim([plot_xmin, t_max])
     plt.colorbar()
 
-    np.save(f'current_fig_scripts/spiking_network_patterns_fig/spktimes_{name},D={tauD},E={E},J0={g}, J1={J_1}, dt={dt}, N={N}.npy', spktimes2)
-    np.save(f'current_fig_scripts/spiking_network_patterns_fig/MF_{name}_D_{tauD}_E_{E}_J0={g}, J1={J_1}, dt={dt}, N={N}.npy', m)
+    np.save(f'../current_fig_scripts/spiking_network_patterns_fig/spktimes_{name},D={tauD},E={E},J0={J_0}, J1={J_1}, dt={dt}, N={N}.npy', spktimes2)
+    np.save(f'../current_fig_scripts/spiking_network_patterns_fig/MF_{name}_D_{tauD}_E_{E}_J0={J_0}, J1={J_1}, dt={dt}, N={N}.npy', m)
 
     plt.show()
     return

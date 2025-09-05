@@ -13,6 +13,8 @@ letterlabelsize =10
 def two_neuron_delay_visualization_save():
     # run a 2 neuron spiking simulation and save
 
+    J_choice = 0 # 0 for delta function, 1 for exponential, and 2 for alpha function
+
     t_max2 = 1.5
     g_2pop = -1
     dt = .001
@@ -21,7 +23,6 @@ def two_neuron_delay_visualization_save():
     tau=0.25
     initial = 1.5
     v0 = (g_2pop + np.sqrt(g_2pop ** 2 + 4 * (E - g_2pop))) / 2
-    J_choice=2
 
     vpop2, spktimes2, J2 = neuron_population(J_choice, t_max2, dt, 2, tau, E, tauD, initial, g_2pop,
                                              0)  # data for ax1,2
@@ -41,8 +42,16 @@ def two_neuron_delay_visualization_save():
     #plt.savefig('fig1v2.png')
     plt.show()
 
-    np.save('/fig1_data/vpop_exp_delay_visual_data_J_-1_E_3_D_.2', vpop2)
-    np.save('/fig1_data/spikes_exp_delay_visual_data_J_-1_E_3_D_.2', spktimes2)
+    if J_choice==0: #delta func
+        np.save('fig1_data/vpop_delay_visual_data_J_-1_E_3_D_.2.npy', vpop2)
+        np.save('fig1_data/spikes_delay_visual_data_J_-1_E_3_D_.2.npy', spktimes2)
+    if J_choice==1: #exponential func
+        np.save('more_realistic_cases_data/vpop_exp_delay_visual_data_J_-1_E_3_D_.2.npy', vpop2)
+        np.save('more_realistic_cases_data/spikes_exp_delay_visual_data_J_-1_E_3_D_.2.npy', spktimes2)
+    if J_choice==2:
+        np.save('more_realistic_cases_data/vpop_alpha_delay_visual_data_J_-1_E_3_D_.2.npy', vpop2)
+        np.save('more_realistic_cases_data/spikes_alpha_delay_visual_data_J_-1_E_3_D_.2.npy', spktimes2)
+
     return
 
 

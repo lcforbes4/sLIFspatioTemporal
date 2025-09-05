@@ -21,6 +21,7 @@ def plot_evals():
     mingrid = data['mingrid'].flatten()
     maxgrid = data['maxgrid'].flatten()
     J0 = data['J0'].flatten()
+    print(J0)
     eval_grid = data['eval_grid'].flatten()
     eval1_grid = data['eval1_grid'].flatten()
     eval2_grid = data['eval2_grid'].flatten()

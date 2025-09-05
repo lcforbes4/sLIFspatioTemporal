@@ -217,25 +217,25 @@ def build_spatio_tempo_fig():
     markersz = 0.2
 
     ax_traveling_wave = fig.add_subplot(gs_traveling_wave)
-    m = np.load('../SpatialMeanField/travelingWavedt.01_E2_D1_J0-2_J1-8.npy')
-    plot_spatial_MF(m,.01,xlim=[5,15], fontsize=fontsize, labelsize=labelsize)
+    m = np.load('spiking_network_patterns_fig/MF_TW_D_1_E_2_J0=-2, J1=-8, dt=0.005, N=1000.npy')
+    plot_spatial_MF(m,.005,xlim=[60,70], fontsize=fontsize, labelsize=labelsize)
     ax_traveling_wave.set_xlabel('')
     ax_traveling_wave.set_ylabel('')
     ax_traveling_wave.set_xticklabels([])
     ax_traveling_wave.set_yticklabels([])
 
     ax_standing_wave = fig.add_subplot(gs_standing_wave)
-    m = np.load('../SpatialMeanField/StandingWavedt.01_E2_D1_J0-2_J1-8.npy')
-    plot_spatial_MF(m,.01,xlim=[5,15], fontsize=fontsize, labelsize=labelsize)
+    m = np.load('spiking_network_patterns_fig/MF_SW_D_1_E_2_J0=-2, J1=-8, dt=0.005, N=1000.npy')
+    plot_spatial_MF(m,.005,xlim=[5,15], fontsize=fontsize, labelsize=labelsize)
     ax_standing_wave.set_xlabel('')
     ax_standing_wave.set_yticklabels([])
     ax_standing_wave.set_xticklabels([])
 
     ax_SW_TW_spike = fig.add_subplot(gs_SW_TW_spike)
-    spktimes = np.load('spiking_network_patterns_fig/spktimes_N_1000_dt_.001_D_1_E_2_J0_-2_J1_-20.npy')
+    spktimes = np.load('spiking_network_patterns_fig/spktimes_SW,D=1,E=2,J0=-2, J1=-8, dt=0.005, N=1000.npy')
     N = 1000
-    dt = .001
-    plot_pop(spktimes, dt, xlim=[5, 25], ylim=[0, N], fontsize=fontsize, labelsize=labelsize)
+    dt = .005
+    plot_pop(spktimes, dt, xlim=[0, 20], ylim=[0, N], fontsize=fontsize, labelsize=labelsize)
     ax_SW_TW_spike.set_xlabel('')
     ax_SW_TW_spike.set_ylabel('')
     ax_SW_TW_spike.set_xticklabels([])
